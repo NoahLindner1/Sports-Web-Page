@@ -1,0 +1,19 @@
+{
+  "name": "SportsScores",
+  "version": "1.0.0",
+  "description": "This web page uses dynamic java script with sports scores in a json database.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Noah Lindner",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "express-handlebars": "^4.0.4",
+    "morgan": "^1.10.0",
+    "path": "^0.12.7"
+  }
+}

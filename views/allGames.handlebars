@@ -1,0 +1,148 @@
+
+<table id = "gameTable" class="table table-bordered table-hover">
+	<thead>
+		<th>Home Team</th><th>Home Team Score</th><th>Visiting Team</th><th>Visiting Team Score</th><th>Location</th><th>Date</th>
+	</thead>
+{{#each games}}
+	<tr>
+		<td>
+			{{this/team1/team}}
+		</td>
+		<td>
+			{{this/team1/score}}
+		</td>
+		<td>
+			{{this/team2/team}}
+		</td>
+		<td>
+			{{this/team2/score}}
+		</td>
+		<td>
+			{{this/gameLocation}}
+		</td>
+		<td>
+			{{this/gameDate}}
+		</td>
+	</tr>
+	{{/each}}
+</table>
+
+
+<hr/>
+<h3>Enter in information about a new game</h3>
+
+<form id="newGameform">
+	<div class="form-group">
+		<label for="HomeTeam">Home Team</label>
+		<input type="text" class="form-control" name="HomeTeam" id="HomeTeam">
+	</div>
+	<div class="form-group">
+		<label for="HomeTeamScore">Home Team Score</label>
+		<input type="text" class="form-control" name="HomeTeamScore" id="HomeTeamScore">
+	</div>
+	<div class="form-group">
+		<label for="VisitingTeam">Visiting Team</label>
+		<input type="text" class="form-control" name="VisitingTeam" id="VisitingTeam">
+	</div>
+	<div class="form-group">
+		<label for="VisitingTeamScore">Visiting Team Score</label>
+		<input type="text" class="form-control" name="VisitingTeamScore" id="VisitingTeamScore">
+	</div>
+	<div class="form-group">
+		<label for="GameLocation">Game Location</label>
+		<input type="text" class="form-control" name="GameLocation" id="GameLocation">
+	</div>
+		<div class="form-group">
+		<label for="GameDate">Game Date</label>
+		<input type="text" class="form-control" name="GameDate" id="GameDate">
+	</div>
+	<button id="freshGameButton" class="btn btn-primary">Submit</button>
+</form>
+
+<script>
+	document.addEventListener("DOMContentLoaded", (event) => {
+		//alert("the page has loaded.");
+	});
+
+	document.getElementById("freshGameButton").addEventListener("click", async (e) => {
+        e.preventDefault();
+
+		try{
+		const HomeTeam = document.getElementById("HomeTeam").value;
+		const HomeTeamScore = document.getElementById("HomeTeamScore").value;
+		const VisitingTeam = document.getElementById("VisitingTeam").value;
+		const VisitingTeamScore = document.getElementById("VisitingTeamScore").value;
+		const GameLocation = document.getElementById("GameLocation").value;
+		const GameDate = document.getElementById("GameDate").value;
+
+		const newGame = {
+			"team1" : {
+				"team": HomeTeam,
+				"score": HomeTeamScore
+			},
+			"team2" : {
+				"team": VisitingTeam,
+				"score": VisitingTeamScore
+			},
+			"gameDate": GameDate,
+			"gameLocation": GameLocation
+		};
+		const fetchConfigData = {
+			method: "POST",
+			body: JSON.stringify(newGame),
+			headers: {
+				"Content-Type": "application/json"
+			}
+		};
+		
+		//should be /games...destination you want to send the post
+		const response = await fetch('/games', fetchConfigData);
+
+		if(response.ok) {
+			const gamesArray = await response.json();
+			console.log(gamesArray);
+			loadTableWithGames(gamesArray);
+		}
+		else{
+			console.log("Error with the response data");
+		}
+
+		}
+
+		catch(err){
+			console.log(`Error: ${err}`);
+		}
+    });
+
+	function loadTableWithGames(gamesArray){
+		const table = document.getElementById("gameTable");
+		const tableBody = table.children[1];
+		tableBody.innerHTML = "";
+
+	for(let i = 0; i < gamesArray.length; i++){
+			let DesiredGame = gamesArray[i];
+			const tr = document.createElement("tr");
+            const homeTd = document.createElement("td");
+			homeTd.innerHTML = `${DesiredGame.team1.team}`;
+			const homeScoreTd = document.createElement("td");
+			homeScoreTd.innerHTML = `${DesiredGame.team1.score}`;
+			const awayTd = document.createElement("td");
+			awayTd.innerHTML = `${DesiredGame.team2.team}`;
+			const awayScoreTd = document.createElement("td");
+			awayScoreTd.innerHTML = `${DesiredGame.team2.score}`;
+			const dateTd = document.createElement("td");
+			dateTd.innerHTML = `${DesiredGame.gameDate}`;
+			const locationTd = document.createElement("td");
+			locationTd.innerHTML = `${DesiredGame.gameLocation}`;
+
+			tr.appendChild(homeTd);
+			tr.appendChild(homeScoreTd);
+			tr.appendChild(awayTd);
+			tr.appendChild(awayScoreTd);
+			tr.appendChild(dateTd);
+			tr.appendChild(locationTd);
+			tableBody.appendChild(tr);
+		}
+
+	}
+</script>

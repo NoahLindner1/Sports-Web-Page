@@ -1,0 +1,111 @@
+<h1>
+	Search through the games by team Name.
+</h1>
+
+<form id="teamName">
+	<div class="form-group">
+		<label for="name">Team Name: </label>
+		<input type="text" class="form-control" name="name" id="name">
+	</div>
+	<button id="NameButton" class="btn btn-primary">Search</button>
+</form>
+
+<h1>
+	Teams:
+</h1>
+
+<table id="nameSearchTable" class="table table-bordered table-hover">
+	<thead class="thead-dark">
+		<th>Home Team</th><th>Score</th><th>Visiting Team</th><th>Score</th><th>Date</th><th>Location</th>
+	</thead>
+
+	{{#each games}}
+	<tr>
+		<td>
+			{{this/team1/team}}
+		</td>
+		<td>
+			{{this/team1/score}}
+		</td>
+		<td>
+			{{this/team2/team}}
+		</td>
+		<td>
+			{{this/team2/score}}
+		</td>
+		<td>
+			{{this/gameLocation}}
+		</td>
+		<td>
+			{{this/gameDate}}
+		</td>
+	</tr>
+	{{/each}}
+</table>
+
+
+<script>
+	document.addEventListener("DOMContentLoaded", (event) => {
+		// alert("The Page was Loaded");
+	});
+
+	document.getElementById("NameButton").addEventListener("click", async (e) => {
+    	e.preventDefault();
+
+		try{
+			const name = document.getElementById("name").value;
+				const locationData = {
+					"name": name
+				};
+			const fetchConfigData = {
+				method: "POST",
+				body: JSON.stringify(locationData),
+				headers: {
+					"Content-Type" : "application/json"
+				}
+			};
+	const response = await fetch('/searchName', fetchConfigData);	
+	if (response.ok) {
+		const searchedGames = await response.json();
+		loadTableWithGames(searchedGames);
+			}
+	else{
+		console.log("error with name data");
+	}			
+}
+	catch(err){
+		console.log(`Error: ${err}`);
+	}
+	});
+
+	function loadTableWithGames(gamesArray){
+		const table = document.getElementById("nameSearchTable");
+		const tableBody = table.children[0];
+		tableBody.innerHTML = "";
+
+	for(let i = 0; i < gamesArray.length; i++){
+			let DesiredGame = gamesArray[i];
+			const tr = document.createElement("tr");
+            const homeTd = document.createElement("td");
+			homeTd.innerHTML = `${DesiredGame.team1.team}`;
+			const homeScoreTd = document.createElement("td");
+			homeScoreTd.innerHTML = `${DesiredGame.team1.score}`;
+			const awayTd = document.createElement("td");
+			awayTd.innerHTML = `${DesiredGame.team2.team}`;
+			const awayScoreTd = document.createElement("td");
+			awayScoreTd.innerHTML = `${DesiredGame.team2.score}`;
+			const dateTd = document.createElement("td");
+			dateTd.innerHTML = `${DesiredGame.gameDate}`;
+			const locationTd = document.createElement("td");
+			locationTd.innerHTML = `${DesiredGame.gameLocation}`;
+
+			tr.appendChild(homeTd);
+			tr.appendChild(homeScoreTd);
+			tr.appendChild(awayTd);
+			tr.appendChild(awayScoreTd);
+			tr.appendChild(dateTd);
+			tr.appendChild(locationTd);
+			tableBody.appendChild(tr);
+		}
+	}
+</script>
